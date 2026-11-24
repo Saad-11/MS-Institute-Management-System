@@ -1,0 +1,26 @@
+/**
+ * Main Layout Styles — the container that wraps sidebar, topbar, and content
+ */
+
+.app-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-area {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  margin-top: var(--topbar-height);
+  overflow-y: auto;
+  padding: var(--space-6);
+}

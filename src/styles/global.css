@@ -1,0 +1,208 @@
+/**
+ * Global Reset & Base Styles
+ */
+
+@import './variables.css';
+@import './students.css';
+@import './promotion.css';
+@import './teachers.css';
+@import './attendance.css';
+@import './fees.css';
+@import './results.css';
+@import './dmc.css';
+@import './reports.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-app);
+  overflow: hidden; /* Prevent body scroll — app uses internal scrolling */
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── Typography Base ─────────────────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+
+p {
+  line-height: var(--line-height-normal);
+  color: var(--color-text-secondary);
+}
+
+a {
+  color: var(--color-primary-600);
+  text-decoration: none;
+}
+
+/* ─── Selection ───────────────────────────────────────────────────────── */
+
+::selection {
+  background-color: var(--color-primary-200);
+  color: var(--color-primary-900);
+}
+
+/* ─── Scrollbar Styling (Windows) ─────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-300);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-neutral-400);
+}
+
+/* ─── Buttons Base ────────────────────────────────────────────────────── */
+
+button {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ─── Inputs Base ─────────────────────────────────────────────────────── */
+
+input, select, textarea {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+}
+
+/* ─── Utility Classes ─────────────────────────────────────────────────── */
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.print-only {
+  display: none !important;
+}
+
+/* ─── Print Styles ────────────────────────────────────────────────────── */
+
+@media print {
+  body {
+    overflow: visible !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  #root {
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .sidebar,
+  .topbar,
+  .top-bar,
+  .no-print,
+  .print-hidden,
+  .dmc-no-print,
+  .reports-no-print,
+  .results-header,
+  .results-tabs-container,
+  button:not(.allow-print) {
+    display: none !important;
+  }
+
+  body.printing-dmc .print-result-sheet-container,
+  body.printing-dmc .hidden-during-dmc-print,
+  body.printing-document .docs-card,
+  body.printing-document .docs-header-card,
+  body.printing-document .docs-history-card,
+  body.printing-document .docs-preview-toolbar {
+    display: none !important;
+  }
+
+  .app-layout {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .main-area {
+    margin-left: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .content-area {
+    margin-top: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  @page {
+    margin: 15mm 15mm 15mm 15mm;
+    size: auto;
+  }
+}

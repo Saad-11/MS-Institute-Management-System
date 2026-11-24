@@ -1,0 +1,1029 @@
+/**
+ * Fee Payment Receipt Preview & Print Stylesheet
+ * Universal School Management System
+ * 
+ * 100% Offline, Zero External CDN / Font / Internet Dependency.
+ * Built with pure CSS for maximum fidelity on screen and paper.
+ * 
+ * Features:
+ * - Crisp monochrome / black-and-white print output for laser printers.
+ * - Fits two complete slips (Office Copy & Student Copy) onto a single A4 sheet.
+ * - Dynamic institution branding and robust initial-based fallback container.
+ */
+
+/* ─── 1. Modal Overlay & Dialog Shell ─────────────────────────────────────── */
+
+.receipt-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  animation: receiptModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes receiptModalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.receipt-modal-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  max-width: 860px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: 94vh;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+
+/* ─── 2. Top Action Toolbar (Hidden during print) ─────────────────────────── */
+
+.receipt-modal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.receipt-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.receipt-toolbar-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+  flex-shrink: 0;
+}
+
+.receipt-toolbar-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.receipt-toolbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.receipt-toolbar-receipt-no {
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.receipt-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Segmented copy mode toggle */
+.receipt-copy-selector {
+  display: inline-flex;
+  align-items: center;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+.receipt-copy-btn {
+  border: none;
+  background: transparent;
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.receipt-copy-btn:hover {
+  color: #0f172a;
+}
+
+.receipt-copy-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.receipt-btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #0f172a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.receipt-btn-print:hover {
+  background: #1e293b;
+}
+
+.receipt-btn-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.receipt-btn-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ─── 3. Modal Scroll Container / Canvas ──────────────────────────────────── */
+
+.receipt-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ─── 4. Paper Layout Sheet ───────────────────────────────────────────────── */
+
+.fee-receipt-paper {
+  background: #ffffff;
+  width: 100%;
+  max-width: 760px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Compact slip for fitting 2 copies on one page */
+.fee-receipt-paper.receipt-compact-slip {
+  padding: 12px 18px;
+}
+
+/* ─── 5. Institutional Header ─────────────────────────────────────────────── */
+
+.receipt-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid #0f172a;
+  margin-bottom: 10px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-header-row {
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  gap: 10px;
+}
+
+.receipt-header-logo-col {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.receipt-header-center {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.receipt-institution-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-institution-name {
+  font-size: 15px;
+  margin: 0 0 1px 0;
+}
+
+.receipt-institution-address {
+  font-size: 11px;
+  color: #475569;
+  margin: 0 0 2px 0;
+  line-height: 1.3;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-institution-address {
+  font-size: 10px;
+  margin: 0 0 1px 0;
+}
+
+.receipt-institution-contact {
+  font-size: 10.5px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-institution-contact {
+  font-size: 9.5px;
+  gap: 4px;
+}
+
+.receipt-contact-sep {
+  color: #94a3b8;
+}
+
+.receipt-header-right-col {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-header-right-col {
+  gap: 4px;
+}
+
+.receipt-badge-status-paid {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-badge-status-paid {
+  font-size: 10px;
+  padding: 2px 7px;
+}
+
+.receipt-copy-pill {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-copy-pill {
+  font-size: 9.5px;
+  padding: 1px 6px;
+}
+
+/* ─── 6. Document Title Ribbon ────────────────────────────────────────────── */
+
+.receipt-title-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 4px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-title-ribbon {
+  margin-bottom: 6px;
+  padding: 2px 8px;
+}
+
+.receipt-title-text {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f172a;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-title-text {
+  font-size: 10.5px;
+}
+
+.receipt-session-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-session-badge {
+  font-size: 10px;
+}
+
+/* ─── 7. Student & Receipt Meta Grid ──────────────────────────────────────── */
+
+.receipt-meta-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 24px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-meta-box {
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  gap: 4px 16px;
+}
+
+.receipt-meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-meta-group {
+  gap: 3px;
+}
+
+.receipt-meta-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-meta-item {
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
+.receipt-meta-label {
+  color: #64748b;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.receipt-meta-value {
+  color: #0f172a;
+  font-weight: 700;
+  text-align: right;
+  word-break: break-word;
+}
+
+.receipt-meta-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.receipt-mode-pill {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-mode-pill {
+  font-size: 9.5px;
+  padding: 0 5px;
+}
+
+/* ─── 8. Fee Itemized Table ───────────────────────────────────────────────── */
+
+.receipt-table-frame {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-table-frame {
+  margin-bottom: 6px;
+}
+
+.receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-table {
+  font-size: 10.5px;
+}
+
+.receipt-table thead th {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 7px 10px;
+  font-weight: 700;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid #0f172a;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-table thead th {
+  padding: 4px 8px;
+  font-size: 9.5px;
+}
+
+.receipt-table tbody td {
+  padding: 7px 10px;
+  border-top: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-table tbody td {
+  padding: 4px 8px;
+}
+
+.receipt-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.receipt-table tbody td:last-child {
+  border-right: none;
+}
+
+.receipt-table .text-left {
+  text-align: left;
+}
+
+.receipt-table .text-center {
+  text-align: center;
+}
+
+.receipt-table .text-right {
+  text-align: right;
+}
+
+.receipt-table .font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.receipt-amount-highlight {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 12px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-amount-highlight {
+  font-size: 11px;
+}
+
+/* ─── 9. Financial Summary & Amount in Words ──────────────────────────────── */
+
+.receipt-summary-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-summary-row {
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.receipt-summary-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.receipt-words-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #334155;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-words-box {
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+.receipt-words-label {
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  margin-right: 4px;
+}
+
+.receipt-words-text {
+  font-style: italic;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.receipt-notes-callout {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 10.5px;
+  color: #92400e;
+  line-height: 1.3;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-notes-callout {
+  padding: 3px 6px;
+  font-size: 9.5px;
+}
+
+.receipt-summary-right {
+  width: 250px;
+  flex-shrink: 0;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-summary-right {
+  width: 220px;
+  padding: 5px 8px;
+  gap: 3px;
+}
+
+.receipt-sum-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #475569;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-sum-line {
+  font-size: 10.5px;
+}
+
+.receipt-sum-line.total-paid {
+  padding-top: 5px;
+  border-top: 1px solid #cbd5e1;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-sum-line.total-paid {
+  padding-top: 3px;
+  font-size: 11.5px;
+}
+
+.receipt-sum-line.balance-line {
+  padding-top: 4px;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-sum-line.balance-line {
+  padding-top: 2px;
+  font-size: 10px;
+}
+
+.receipt-balance-cleared {
+  color: #15803d;
+}
+
+.receipt-balance-due {
+  color: #b45309;
+}
+
+/* ─── 10. Signatures & Verification Area ──────────────────────────────────── */
+
+.receipt-signatures-grid {
+  display: grid;
+  grid-template-columns: 1fr 100px 1fr;
+  align-items: flex-end;
+  gap: 12px;
+  padding-top: 24px;
+  margin-top: 8px;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-signatures-grid {
+  grid-template-columns: 1fr 80px 1fr;
+  padding-top: 14px;
+  margin-top: 6px;
+  gap: 8px;
+}
+
+.receipt-sig-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.receipt-sig-line {
+  width: 140px;
+  border-top: 1.2px dashed #94a3b8;
+  padding-top: 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-sig-line {
+  width: 120px;
+  padding-top: 2px;
+  font-size: 9.5px;
+}
+
+.receipt-sig-sub {
+  font-size: 9px;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-sig-sub {
+  font-size: 8.5px;
+}
+
+.receipt-seal-placeholder {
+  width: 58px;
+  height: 58px;
+  border: 1.2px dashed #cbd5e1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 auto;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-seal-placeholder {
+  width: 44px;
+  height: 44px;
+  font-size: 7.5px;
+}
+
+/* ─── 11. Disclaimer & Footer ─────────────────────────────────────────────── */
+
+.receipt-disclaimer-row {
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #94a3b8;
+}
+
+.fee-receipt-paper.receipt-compact-slip .receipt-disclaimer-row {
+  margin-top: 6px;
+  padding-top: 4px;
+  font-size: 8.5px;
+}
+
+/* ─── 12. Cutting Guide for Dual Copies ───────────────────────────────────── */
+
+.receipt-cut-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0;
+  width: 100%;
+  max-width: 760px;
+  font-size: 10px;
+  color: #64748b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.receipt-cut-line::before,
+.receipt-cut-line::after {
+  content: '';
+  flex: 1;
+  border-top: 1.5px dashed #94a3b8;
+}
+
+/* ─── 13. PRINT STYLESHEET (@media print) ─────────────────────────────────── */
+/* Optimized for Crisp Black-and-White Laser Printing and 1-Page Dual Slips  */
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 5mm 8mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide application chrome and background UI during fee receipt printing */
+  body.printing-receipt #root,
+  body.printing-receipt .sidebar,
+  body.printing-receipt .topbar,
+  body.printing-receipt .top-bar,
+  body.printing-receipt .no-print,
+  body.printing-receipt .receipt-modal-toolbar,
+  body.printing-receipt button,
+  body.printing-receipt .receipt-copy-selector {
+    display: none !important;
+  }
+
+  /* Unwrap modal backdrop portalled to document.body */
+  body > .receipt-modal-backdrop,
+  .receipt-modal-backdrop {
+    position: static !important;
+    display: block !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    animation: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .receipt-modal-card {
+    position: static !important;
+    display: block !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .receipt-modal-body {
+    position: static !important;
+    display: block !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    gap: 0 !important;
+  }
+
+  /* Base Paper Sheet in Print */
+  .fee-receipt-paper {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: 1.5px solid #000000 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    box-sizing: border-box !important;
+    padding: 16px 20px !important;
+  }
+
+  /* Compact Slip in Print: specifically constrained to fit TWO copies on 1 A4 */
+  .fee-receipt-paper.receipt-compact-slip {
+    max-height: 134mm !important;
+    height: auto !important;
+    margin: 0 0 2mm 0 !important;
+    padding: 8px 14px !important;
+    border: 1.5px solid #000000 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    overflow: hidden !important;
+  }
+
+  /* Black & White Optimization: text & borders */
+  .receipt-institution-name,
+  .receipt-institution-address,
+  .receipt-institution-contact,
+  .receipt-title-text,
+  .receipt-session-badge,
+  .receipt-meta-label,
+  .receipt-meta-value,
+  .receipt-words-label,
+  .receipt-words-text,
+  .receipt-sum-line,
+  .receipt-sig-line,
+  .receipt-sig-sub,
+  .receipt-disclaimer-row,
+  .receipt-balance-cleared,
+  .receipt-balance-due,
+  .receipt-amount-highlight {
+    color: #000000 !important;
+  }
+
+  .receipt-header-row {
+    border-bottom: 1.5px solid #000000 !important;
+    margin-bottom: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .receipt-header-logo-col {
+    border-color: #000000 !important;
+  }
+
+  .receipt-header-logo-col img,
+  .receipt-header-logo-col svg,
+  .institution-fallback-initial {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* High contrast boxes with crisp black borders and clean white backgrounds */
+  .receipt-meta-box,
+  .receipt-words-box,
+  .receipt-summary-right,
+  .receipt-title-ribbon,
+  .receipt-notes-callout {
+    background-color: #ffffff !important;
+    border: 1px solid #000000 !important;
+    border-radius: 2px !important;
+  }
+
+  /* Table styles: clean black border, razor-sharp header */
+  .receipt-table-frame {
+    border: 1px solid #000000 !important;
+    border-radius: 0 !important;
+  }
+
+  .receipt-table thead th {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 1px solid #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .receipt-table tbody td {
+    border-top: 1px solid #000000 !important;
+    border-right: 1px solid #000000 !important;
+    color: #000000 !important;
+  }
+
+  .receipt-table tbody td:last-child {
+    border-right: none !important;
+  }
+
+  /* Badges & Pills */
+  .receipt-badge-status-paid {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1.5px solid #000000 !important;
+    font-weight: 800 !important;
+  }
+
+  .receipt-copy-pill {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    font-weight: 800 !important;
+  }
+
+  .receipt-mode-pill {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Signatures */
+  .receipt-signatures-grid {
+    border-top: 1px solid #000000 !important;
+  }
+
+  .receipt-sig-line {
+    border-top: 1px solid #000000 !important;
+    color: #000000 !important;
+  }
+
+  .receipt-seal-placeholder {
+    border: 1.2px dashed #000000 !important;
+    color: #000000 !important;
+  }
+
+  .receipt-disclaimer-row {
+    border-top: 1px solid #000000 !important;
+    color: #000000 !important;
+  }
+
+  /* Cutting Guide: Avoid page breaks entirely */
+  .receipt-cut-line {
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    break-before: avoid !important;
+    break-after: avoid !important;
+    margin: 2mm 0 !important;
+    color: #000000 !important;
+  }
+
+  .receipt-cut-line::before,
+  .receipt-cut-line::after {
+    border-top: 1.2px dashed #000000 !important;
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "name": "school-management-system",
+  "version": "1.0.0",
+  "description": "MS Institute Management System — Commercial offline Windows desktop application",
+  "main": "dist-electron/main.js",
+  "author": "MS Institute Management System",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "npm run build:electron && concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build": "tsc && vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build:all": "npm run build && npm run build:electron",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.electron.json --noEmit",
+    "preview": "vite preview",
+    "start": "npm run build:all && electron .",
+    "dist": "npm run build:all && electron-builder --win && node scripts/copy-installer-to-root.mjs",
+    "test:phase2": "npm run build:electron && node test/database-and-auth.test.mjs",
+    "test:phase3": "npm run build:electron && node test/phase3-school-structure.test.mjs",
+    "test:phase4": "npm run build:electron && node test/phase4-students-and-teachers.test.mjs",
+    "test:phase5": "npm run build:electron && node test/phase5-attendance.test.mjs",
+    "test:phase6": "npm run build:electron && node test/phase6-fees.test.mjs",
+    "test:phase7": "npm run build:electron && node test/phase7-exams.test.mjs",
+    "test:phase8": "npm run build:electron && node test/phase8-documents-reports-promotions.test.mjs",
+    "test:phase9": "npm run build:electron && node test/phase9-backup-superadmin-licensing.test.mjs",
+    "test:phase10": "npm run build:electron && node test/phase10-final-verification.test.mjs",
+    "test": "npm run build:electron && node test/database-and-auth.test.mjs && node test/phase3-school-structure.test.mjs && node test/phase4-students-and-teachers.test.mjs && node test/phase5-attendance.test.mjs && node test/phase6-fees.test.mjs && node test/phase7-exams.test.mjs && node test/phase8-documents-reports-promotions.test.mjs && node test/phase9-backup-superadmin-licensing.test.mjs && node test/phase10-final-verification.test.mjs",
+    "clean": "rimraf dist dist-electron"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.ms-institute.app",
+    "productName": "MS Institute Management System",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "npmRebuild": false,
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/icon.png",
+      "signAndEditExecutable": false,
+      "artifactName": "MS Institute Management System Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "MS Institute Management System",
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh",
+      "artifactName": "MS Institute Management System Setup.${ext}"
+    }
+  }
+}
